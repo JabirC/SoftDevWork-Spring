@@ -22,30 +22,29 @@ Import mechanism:
    5) Called insertData() once
 '''
 
-from flask import Flask
-
-app = Flask (__name__)
-
 from pymongo import MongoClient
 import json
 
 SERVER_ADDR='104.248.227.121'
 client = MongoClient(SERVER_ADDR, 27017)
-db = None
-collection = None
+db = client.huMONGOus
+collection = db.nobelprize
 
 @app.route("/")
 def drop():
     client.drop_database( "huMONGOus")
 
 
-def rebuild():
+def rebuild(address):
     '''
     function to import data from json file and insert into database
     only called once
     '''
-    db = client.huMONGOus
-    collection = db.nobelprize
+    drop()
+    client.close()
+    client = MongoClient(address, 27017) 
+    db = client['huMONGOus']
+    collection = db['nobelprize']
     with open('nobelprize.json') as f:
         data = json.load(f)
         collection.insert_many(data["prizes"])
