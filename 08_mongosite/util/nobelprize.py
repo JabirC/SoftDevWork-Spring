@@ -1,7 +1,7 @@
-# Team huMONGOus : Britni Canale & Jabir Chowdhury
+# Team MONGOnificient: Michelle Tang & Jabir Chowdhury & Sarar Aseer
 # Softdev pd6
-# K#07: Import/Export Bank
-# 2019-03-04
+# K#08: Ay Mon, Go Git It From Yer Flask
+# 2019-03-07
 
 '''
 dataset name: Nobel Prizes
@@ -25,27 +25,40 @@ Import mechanism:
 from pymongo import MongoClient
 import json
 
-SERVER_ADDR='104.248.227.121'
+
+SERVER_ADDR='104.248.227.121' # change to IP you want to start with
 client = MongoClient(SERVER_ADDR, 27017)
 db = client.huMONGOus
 collection = db.nobelprize
 
-@app.route("/")
-def drop():
-    client.drop_database( "huMONGOus")
 
 
 def rebuild(address):
     '''
     function to import data from json file and insert into database
-    only called once
     '''
-    drop()
+
+    global SERVER_ADDR
+    global client
+    global db
+    global collection
+
     client.close()
-    client = MongoClient(address, 27017) 
+    #dropping and recreating database on specified server
+    if address != "":
+        SERVER_ADDR = address
+    client = MongoClient(SERVER_ADDR, 27017)
+    client.drop_database( "huMONGOus")
     db = client['huMONGOus']
     collection = db['nobelprize']
-    with open('nobelprize.json') as f:
+    insertData()
+
+def insertData():
+    '''
+    function to import data from json file and insert into database
+    only called once
+    '''
+    with open('data/nobelprize.json') as f:
         data = json.load(f)
         collection.insert_many(data["prizes"])
 
@@ -95,29 +108,23 @@ def find_topic(topic):
     return ret
 
 # insertData() #already called, no need to call again
-drop()
-rebuild()
-print("###########################")
-print("testing find_year()")
-print("###########################")
-print(find_year("2018"))
-print("###########################")
-print("testing find_category()")
-print("###########################")
-print(find_category("physics"))
-print("###########################")
-print("testing find_year_category()")
-print("###########################")
-print(find_year_category("2018", "chemistry"))
-print("###########################")
-print("testing find_category_num()")
-print("###########################")
-print(find_category_num("peace", 3))
-print("###########################")
-print("testing find_topic()")
-print("###########################")
-print(find_topic("middle east"))
-
-if __name__ == "__main__":
-    app.debug = True
-    app.run()
+# print("###########################")
+# print("testing find_year()")
+# print("###########################")
+# print(find_year("2018"))
+# print("###########################")
+# print("testing find_category()")
+# print("###########################")
+# print(find_category("physics"))
+# print("###########################")
+# print("testing find_year_category()")
+# print("###########################")
+# print(find_year_category("2018", "chemistry"))
+# print("###########################")
+# print("testing find_category_num()")
+# print("###########################")
+# print(find_category_num("peace", 3))
+# print("###########################")
+# print("testing find_topic()")
+# print("###########################")
+# print(find_topic("middle east"))
